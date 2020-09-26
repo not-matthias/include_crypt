@@ -1,2 +1,2 @@
-# encrypt_include
-Embed files in a binary safely.
+# include_crypt
+Safely embed files into your binary.
