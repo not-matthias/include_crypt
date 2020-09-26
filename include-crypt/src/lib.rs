@@ -1,3 +1,6 @@
+// TODO: Remove this
+#![allow(dead_code)]
+
 pub use const_random::const_random;
 pub use include_crypt_codegen as codegen;
 
@@ -25,9 +28,10 @@ impl EncryptedFile {
 
 #[macro_export]
 macro_rules! include_crypt {
-    (XOR, $path:expr) => {{
-        let key = $crate::const_random!(u64);
-
-        $crate::codegen::encrypt_xor!($path, key)
-    }};
+    (XOR, $path:expr) => {
+        $crate::codegen::encrypt_xor!($path)
+    };
+    (XOR, $path:expr, $key:expr) => {
+        $crate::codegen::encrypt_xor!($path, $key)
+    };
 }
