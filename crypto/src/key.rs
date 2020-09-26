@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-pub(crate) struct EncryptionKey {
+pub struct EncryptionKey {
     pub key: Vec<u8>,
 }
 
@@ -43,4 +43,12 @@ impl Deref for EncryptionKey {
     type Target = Vec<u8>;
 
     fn deref(&self) -> &Self::Target { &self.key }
+}
+
+impl From<u64> for EncryptionKey {
+    fn from(key: u64) -> Self { Self::new(key) }
+}
+
+impl AsRef<EncryptionKey> for EncryptionKey {
+    fn as_ref(&self) -> &Self { &self }
 }

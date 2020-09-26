@@ -1,4 +1,5 @@
-use crate::{key::EncryptionKey, utils::read_file};
+use crate::utils::read_file;
+use include_crypt_crypto::{key::EncryptionKey, xor};
 use syn::{
     export::TokenStream,
     parse::{Parse, ParseBuffer},
@@ -42,12 +43,8 @@ pub(crate) fn impl_encrypt_xor(input: TokenStream) -> syn::Result<TokenStream> {
     // Read the file and encrypt it
     //
     let mut file = read_file(&args.file_path)?;
-    let file = file
-        .as_mut_slice()
-        .chunks_mut(args.key.len())
-        .map(|d| d.into_iter().zip(&*args.key).map(|(d, k)| *d ^ *k).collect::<Vec<_>>())
-        .flatten()
-        .collect::<Vec<_>>();
+
+    xor(file.as_mut_slice(), &args.key);
 
     // If we generated a random key, we have to return it too.
     //

@@ -1,6 +1,5 @@
 use proc_macro::TokenStream;
 
-mod key;
 mod utils;
 mod xor;
 
