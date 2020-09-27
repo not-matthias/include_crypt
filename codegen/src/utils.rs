@@ -1,11 +1,10 @@
 use std::{fs::File, io::Read, path::PathBuf};
 
-#[doc(hidden)]
 pub(crate) fn error_mapping<E: std::fmt::Display>(error: E) -> syn::Error {
     syn::Error::new(proc_macro2::Span::call_site(), error)
 }
 
-/// Reads the file and returns the content.
+/// Opens the specified file and returns the content.
 pub(crate) fn read_file<P: Into<PathBuf>>(file_path: P) -> syn::Result<Vec<u8>> {
     let file_path = file_path.into();
 

@@ -3,7 +3,7 @@ use proc_macro::TokenStream;
 mod utils;
 mod xor;
 
-/// Encrypts a file with a random xor key.
+/// Encrypts a file with a random or custom xor key.
 ///
 /// # Example
 ///
@@ -12,13 +12,15 @@ mod xor;
 /// ## Custom key
 ///
 /// ```
-/// let encrypted = encrypt_xor!("file.txt", 0xDEADBABE); 
+/// # use include_crypt_codegen::encrypt_xor;
+/// let encrypted = encrypt_xor!("src/lib.rs", 0xDEADBABE);
 /// ```
 ///
 /// ## Random key
 ///
 /// ```
-/// let (key, encrypted) = encrypt_xor!("file.txt"); 
+/// # use include_crypt_codegen::encrypt_xor;
+/// let (key, encrypted) = encrypt_xor!("src/lib.rs");
 /// ```
 #[proc_macro]
 pub fn encrypt_xor(input: TokenStream) -> TokenStream {
