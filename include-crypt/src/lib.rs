@@ -1,5 +1,5 @@
-pub use include_crypt_codegen as codegen;
-pub use include_crypt_crypto as crypto;
+#[doc(hidden)] pub use include_crypt_codegen as codegen;
+#[doc(hidden)] pub use include_crypt_crypto as crypto;
 
 use crypto::{
     aes::{aes_decrypt, AES_KEY_LEN, AES_NONCE_LEN},
@@ -18,9 +18,11 @@ pub enum EncryptionType {
     Aes(&'static str, &'static str),
 }
 
+/// The structure which is used to store the encrypted buffer and the decryption
+/// keys.
 #[derive(Debug)]
 pub struct EncryptedFile {
-    /// The buffer that contains the encrypted bytes of the file.
+    /// The buffer that contains the encrypted bytes.
     buffer: &'static [u8],
 
     /// The type of the encryption that has been used.
@@ -28,10 +30,30 @@ pub struct EncryptedFile {
 }
 
 impl EncryptedFile {
-    /// Generates a new instance of this struct.
+    /// Creates a new instance with the specified encrypted buffer and
+    /// encryption type. The encryption type also stores the decryption keys
+    /// which can be used to access the original data.
+    ///
+    /// # Parameters
+    ///
+    /// - `buffer`: The buffer with the encrypted bytes. This will be the output
+    ///   of the `encrypt_xor` / `encrypt_aes` proc macros.
+    /// - `enc_type`: The type of the encryption. This will be used to decrypt
+    ///   the buffer as it also stores the decryption keys for the different
+    ///   algorithms. If the key is randomly generated it will also be returned
+    ///   by the proc macro and saved.
+    ///
+    /// # Returns
+    ///
+    /// Returns a `EncryptedFile` instance which can be used to decrypt the
+    /// internal buffer.
     pub const fn new(buffer: &'static [u8], enc_type: EncryptionType) -> Self { Self { buffer, enc_type } }
 
     /// Decrypts the internal buffer and returns it.
+    ///
+    /// # Returns
+    ///
+    /// Returns the decrypted buffer.
     pub fn decrypt(&self) -> Vec<u8> {
         let buffer = match &self.enc_type {
             EncryptionType::Xor(key) => {
@@ -76,9 +98,59 @@ impl EncryptedFile {
     }
 
     /// Decrypts the internal buffer and returns it as a string.
+    ///
+    /// # Returns
+    ///
+    /// If the decrypted buffer is not a valid utf-8 string, an error will be
+    /// returned. If it is a valid utf-8 string, it will be returned.
     pub fn decrypt_str(&self) -> Result<String, FromUtf8Error> { String::from_utf8(self.decrypt()) }
 }
 
+/// Macro that can be used to safely embed files into the binary.
+///
+/// # Parameters
+///
+/// The macro can be used with different encryption algorithms.
+///
+/// ```ignore
+/// include_crypt!($encryption_type, $file_path, $optional_key)
+/// ```
+///
+/// - `$encryption_type`: The type of the encryption. Either `XOR` or `AES`. If
+///   you don't specify an encryption type, `XOR` will be used.
+/// - `$filePath`: The path to the file that should be embedded. If the path is
+///   relative, the `CARGO_MANIFEST_DIR` will be used as a starting point.
+/// - `$optional_key`: The optional encryption key. If specified, it has to be
+///   decodable by [hex](https://crates.io/crates/hex) crate.
+///
+/// # Returns
+///
+/// The macro expands to a `encrypt_xor` or `encrypt_aes` proc macro call. The
+/// return value will then be used to create a new `EncryptedFile` instance.
+///
+/// # Examples
+///
+/// More examples can be found in the `tests` and `examples` directory.
+///
+/// ```ignore
+/// // Encrypt using XOR with random key
+/// let file: EncryptedFile = include_crypt!("file.txt");
+///
+/// // Encrypt using XOR with custom key
+/// let file: EncryptedFile = include_crypt!("file.txt", 0xdeadbeef);
+///
+/// // Encrypt using XOR with random key
+/// let file: EncryptedFile = include_crypt!(XOR, "file.txt");
+///
+/// // Encrypt using XOR with custom key
+/// let file: EncryptedFile = include_crypt!(XOR, "file.txt", 0xdeadbeef);
+///
+/// // Encrypt using AES with random key
+/// let file: EncryptedFile = include_crypt!(AES, "file.txt");
+///
+/// // Encrypt using AES with custom key
+/// let file: EncryptedFile = include_crypt!(AES, "file.txt", 0xdeadbeef);
+/// ```
 #[macro_export]
 macro_rules! include_crypt {
     (XOR, $path:expr) => {{
@@ -102,4 +174,11 @@ macro_rules! include_crypt {
 
         $crate::EncryptedFile::new(data, $crate::EncryptionType::Aes(stringify!($key), nonce))
     }};
+
+    ($path:expr) => {
+        include_crypt!(XOR, $path, $key)
+    };
+    ($path:expr, $key:expr) => {
+        include_crypt!(XOR, $path, $key)
+    };
 }
