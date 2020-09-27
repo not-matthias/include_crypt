@@ -25,7 +25,7 @@ impl EncryptedFile {
     pub fn decrypt(&self) -> Vec<u8> {
         match self.enc_type {
             EncryptionType::Xor(key) => {
-                let mut buffer = self.buffer.clone().to_vec();
+                let mut buffer = self.buffer.to_vec();
 
                 xor(buffer.as_mut_slice(), EncryptionKey::from(key));
 

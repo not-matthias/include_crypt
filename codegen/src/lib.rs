@@ -25,7 +25,7 @@ mod xor;
 #[proc_macro]
 pub fn encrypt_xor(input: TokenStream) -> TokenStream {
     match xor::impl_encrypt_xor(input) {
-        Ok(ts) => ts.into(),
+        Ok(ts) => ts,
         Err(err) => err.to_compile_error().into(),
     }
 }
