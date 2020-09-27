@@ -10,15 +10,21 @@ pub(crate) fn read_file<P: Into<PathBuf>>(file_path: P) -> syn::Result<Vec<u8>> 
 
     // Create the correct path to the file
     //
-    let file_path = if !file_path.is_relative() {
+    let file_path = if file_path.is_relative() {
         PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap()).join(file_path)
     } else {
         file_path
     };
 
+    // Check if the file exists
+    //
+    if !file_path.exists() {
+        return Err(error_mapping(format!("File {:?} could not be found.", file_path)));
+    };
+
     // Open and read file.
     //
-    let mut file = File::open(file_path).map_err(error_mapping)?;
+    let mut file = File::open(&file_path).map_err(error_mapping)?;
     let file_size = file.metadata().map_err(error_mapping)?.len();
 
     let mut file_bytes = Vec::with_capacity(file_size as usize);

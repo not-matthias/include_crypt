@@ -6,6 +6,7 @@ use crypto::{
     key::EncryptionKey,
     xor::{xor, XOR_KEY_LEN},
 };
+use std::string::FromUtf8Error;
 
 /// The different encryption types.
 #[derive(Debug)]
@@ -75,7 +76,7 @@ impl EncryptedFile {
     }
 
     /// Decrypts the internal buffer and returns it as a string.
-    pub fn decrypt_str(&self) -> Option<String> { String::from_utf8(self.decrypt()).ok() }
+    pub fn decrypt_str(&self) -> Result<String, FromUtf8Error> { String::from_utf8(self.decrypt()) }
 }
 
 #[macro_export]
