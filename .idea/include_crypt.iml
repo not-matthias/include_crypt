@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/codegen/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/codegen/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crypto/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include-crypt/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

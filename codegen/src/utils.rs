@@ -24,5 +24,17 @@ pub(crate) fn read_file<P: Into<PathBuf>>(file_path: P) -> syn::Result<Vec<u8>> 
     let mut file_bytes = Vec::with_capacity(file_size as usize);
     file.read_to_end(&mut file_bytes).map_err(error_mapping)?;
 
+    // Compress the file if the feature is set
+    //
+    #[cfg(feature = "compression")]
+    {
+        use std::io::Write;
+
+        let mut encoder = libflate::deflate::Encoder::new(Vec::with_capacity(file_bytes.len()));
+        encoder.write_all(&file_bytes).map_err(error_mapping)?;
+        encoder.finish().into_result().map_err(error_mapping)
+    }
+
+    #[cfg(not(feature = "compression"))]
     Ok(file_bytes)
 }

@@ -1,4 +1,3 @@
-pub use const_random::const_random;
 pub use include_crypt_codegen as codegen;
 pub use include_crypt_crypto as crypto;
 
@@ -33,7 +32,7 @@ impl EncryptedFile {
 
     /// Decrypts the internal buffer and returns it.
     pub fn decrypt(&self) -> Vec<u8> {
-        match &self.enc_type {
+        let buffer = match &self.enc_type {
             EncryptionType::Xor(key) => {
                 let mut buffer = self.buffer.to_vec();
 
@@ -51,6 +50,27 @@ impl EncryptedFile {
 
                 buffer
             }
+        };
+
+        // Decompress the file if the feature is set
+        //
+        #[cfg(feature = "compression")]
+        {
+            use std::io::Read;
+
+            let mut decompressed = Vec::new();
+
+            let mut decoder = libflate::deflate::Decoder::new(std::io::Cursor::new(buffer));
+            decoder
+                .read_to_end(&mut decompressed)
+                .expect("The embedded deflate buffer was corrupted");
+
+            decompressed
+        }
+
+        #[cfg(not(feature = "compression"))]
+        {
+            buffer
         }
     }
 

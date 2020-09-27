@@ -7,8 +7,11 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-const-random = "0.1.8"
-
 include-crypt-codegen = { path = "../codegen" }
 include-crypt-crypto = { path = "../crypto" }
 
+libflate = { version = "1.0.2", optional = true }
+
+[features]
+default = []
+compression = ["include-crypt-codegen/compression", "libflate"]
