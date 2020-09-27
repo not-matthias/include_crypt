@@ -5,11 +5,11 @@ Safely embed files into your binary.
 
 ## Example
 
-```
-static file: EncryptedFile = include_crypt!("../assets/file.txt");
+```rust
+static FILE: EncryptedFile = include_crypt!(XOR, "../assets/file.txt");
 
 fn main() {
-    let decrypted = file.decrypted();
+    let decrypted = FILE.decrypt();
 }
 ```
 
