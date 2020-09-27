@@ -8,7 +8,7 @@ Safely embed files into your binary.
 ```rust
 use include_crypt::{include_crypt, EncryptedFile};
 
-static FILE: EncryptedFile = include_crypt!("../assets/file.txt");
+static FILE: EncryptedFile = include_crypt!("assets/file.txt");
 
 fn main() {
     let decrypted = FILE.decrypt();
