@@ -7,7 +7,7 @@ pub const DEFAULT_KEY_LEN: usize = 32;
 /// A simple symmetric encryption key which will be stored as a vector of bytes.
 #[derive(Debug)]
 pub struct EncryptionKey {
-    pub data: Vec<u8>,
+    data: Vec<u8>,
 }
 
 impl EncryptionKey {
