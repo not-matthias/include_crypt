@@ -3,6 +3,7 @@ name = "include-crypt-codegen"
 version = "0.1.0"
 authors = ["not-matthias <26800596+not-matthias@users.noreply.github.com>"]
 edition = "2018"
+build = "build.rs"
 
 [lib]
 proc-macro = true
@@ -19,3 +20,4 @@ include-crypt-crypto = { path = "../crypto" }
 [features]
 default = []
 compression = ["libflate"]
+force-build = []

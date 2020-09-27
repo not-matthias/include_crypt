@@ -15,3 +15,4 @@ libflate = { version = "1.0.2", optional = true }
 [features]
 default = []
 compression = ["include-crypt-codegen/compression", "libflate"]
+force-build = ["include-crypt-codegen/force-build"]
