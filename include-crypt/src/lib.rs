@@ -176,7 +176,7 @@ macro_rules! include_crypt {
     }};
 
     ($path:expr) => {
-        include_crypt!(XOR, $path, $key)
+        include_crypt!(XOR, $path)
     };
     ($path:expr, $key:expr) => {
         include_crypt!(XOR, $path, $key)
