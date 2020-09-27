@@ -1,3 +1,5 @@
+![Rust](https://github.com/not-matthias/include_crypt/workflows/Rust/badge.svg)
+
 # include_crypt
 Safely embed files into your binary.
 
