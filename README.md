@@ -19,7 +19,5 @@ TODO
 
 ## Features
 
-- `aes`
-- `rsa`
-- `xor`
-- `checksum`
+- `compression`: Compresses the file before encrypting it.
+- `force-build`: Always runs the proc macro. 
