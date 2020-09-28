@@ -118,6 +118,7 @@ impl EncryptedFile {
     ///
     /// If the decrypted buffer is not a valid utf-8 string, an error will be
     /// returned. If it is a valid utf-8 string, it will be returned.
+    #[inline(always)]
     pub fn decrypt_str(&self) -> Result<String, FromUtf8Error> { String::from_utf8(self.decrypt()) }
 }
 
