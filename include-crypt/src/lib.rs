@@ -55,26 +55,36 @@ impl EncryptedFile {
     /// # Returns
     ///
     /// Returns the decrypted buffer.
+    #[inline(always)]
     pub fn decrypt(&self) -> Vec<u8> {
         let buffer = match &self.enc_type {
             EncryptionType::Xor(key) => {
                 let mut buffer = self.buffer.to_vec();
 
-                let key =
-                    EncryptionKey::new(key.deobfuscate(obfstr::random!(u16) as usize).as_str(), XOR_KEY_LEN).unwrap();
-                xor(buffer.as_mut_slice(), key);
+                // By using `map` instead of `unwrap` we are getting rid of the panic strings in
+                // the binary.
+                //
+                let _ = EncryptionKey::new(key.deobfuscate(obfstr::random!(u16) as usize).as_str(), XOR_KEY_LEN)
+                    .map(|key| xor(buffer.as_mut_slice(), key));
 
                 buffer.to_vec()
             }
             EncryptionType::Aes(key, nonce) => {
                 let mut buffer = self.buffer.to_vec();
 
-                let key =
-                    EncryptionKey::new(key.deobfuscate(obfstr::random!(u16) as usize).as_str(), AES_KEY_LEN).unwrap();
-                let nonce =
-                    EncryptionKey::new(nonce.deobfuscate(obfstr::random!(u16) as usize).as_str(), AES_NONCE_LEN)
-                        .unwrap();
-                aes_decrypt(buffer.as_mut_slice(), key, nonce);
+                // By using `map` instead of `unwrap` we are getting rid of the panic strings in
+                // the binary.
+                //
+                let _ = EncryptionKey::new(key.deobfuscate(obfstr::random!(u16) as usize).as_str(), AES_KEY_LEN).map(
+                    |key| {
+                        EncryptionKey::new(nonce.deobfuscate(obfstr::random!(u16) as usize).as_str(), AES_NONCE_LEN)
+                            .map(|nonce| {
+                                // This should never fail anyways because the keys have a fixed size.
+                                //
+                                let _ = aes_decrypt(buffer.as_mut_slice(), key, nonce);
+                            })
+                    },
+                );
 
                 buffer
             }
