@@ -1,4 +1,7 @@
-use crate::{args::SymmetricArgs, utils::read_file};
+use crate::{
+    args::SymmetricArgs,
+    utils::{error_mapping, read_file},
+};
 use include_crypt_crypto::{
     aes::{aes_encrypt, AES_NONCE_LEN},
     key::EncryptionKey,
@@ -13,7 +16,7 @@ pub(crate) fn impl_encrypt_aes(input: TokenStream) -> syn::Result<TokenStream> {
     // Encrypt the file
     //
     let nonce = EncryptionKey::random(AES_NONCE_LEN);
-    aes_encrypt(file.as_mut_slice(), &args.key, &nonce);
+    aes_encrypt(file.as_mut_slice(), &args.key, &nonce).map_err(|e| error_mapping(e.to_string()))?;
 
     // Return the key, nonce and encrypted file
     //

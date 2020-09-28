@@ -10,6 +10,7 @@ pub const XOR_KEY_LEN: usize = 32;
 /// - `data`: The data buffer which can be either encrypted or decrypted. After
 ///   this function has been called, it will store the encrypted/decrypted data.
 /// - `key`: The key that should be used to encrypt/decrypt the specified data.
+#[inline(always)]
 pub fn xor<K: AsRef<EncryptionKey>>(data: &mut [u8], key: K) {
     let key = key.as_ref();
 
