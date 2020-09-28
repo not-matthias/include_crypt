@@ -11,13 +11,10 @@ pub(crate) fn impl_encrypt_xor(input: TokenStream) -> syn::Result<TokenStream> {
     //
     xor(file.as_mut_slice(), &args.key);
 
-    // If we generated a random key, we have to return it too.
+    // Return the key and encrypted file
     //
     let bytes = syn::LitByteStr::new(&file, proc_macro2::Span::call_site());
-    if args.random_key {
-        let key = args.key.as_str();
-        Ok(quote::quote!((#key, #bytes)).into())
-    } else {
-        Ok(quote::quote!(#bytes).into())
-    }
+    let key = args.key.as_str();
+
+    Ok(quote::quote!((obfstr::obfconst!(#key), #bytes)).into())
 }

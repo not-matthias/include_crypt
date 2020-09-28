@@ -15,15 +15,11 @@ pub(crate) fn impl_encrypt_aes(input: TokenStream) -> syn::Result<TokenStream> {
     let nonce = EncryptionKey::random(AES_NONCE_LEN);
     aes_encrypt(file.as_mut_slice(), &args.key, &nonce);
 
-    // Return the bytes, nonce and random generated key.
+    // Return the key, nonce and encrypted file
     //
     let nonce = nonce.as_str();
     let bytes = syn::LitByteStr::new(&file, proc_macro2::Span::call_site());
+    let key = args.key.as_str();
 
-    if args.random_key {
-        let key = args.key.as_str();
-        Ok(quote::quote!((#key, #nonce, #bytes)).into())
-    } else {
-        Ok(quote::quote!((#nonce, #bytes)).into())
-    }
+    Ok(quote::quote!((obfstr::obfconst!(#key), obfstr::obfconst!(#nonce), #bytes)).into())
 }

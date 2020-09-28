@@ -20,9 +20,6 @@ pub(crate) struct SymmetricArgs {
     /// The parsed file path.
     pub file_path: String,
 
-    /// Flag whether the key was randomly generated.
-    pub random_key: bool,
-
     /// The parsed encryption key.
     pub key: EncryptionKey,
 }
@@ -33,19 +30,15 @@ impl Parse for SymmetricArgs {
 
         // If there's no key defined, generate one randomly.
         //
-        let (random_key, key) = if input.parse::<syn::Token![,]>().is_err() {
-            (true, EncryptionKey::default())
+        let key = if input.parse::<syn::Token![,]>().is_err() {
+            EncryptionKey::default()
         } else {
-            (
-                false,
-                EncryptionKey::try_from(&*input.parse::<syn::LitInt>()?.to_string())
-                    .map_err(|e| syn::parse::Error::new(Span::call_site(), e))?,
-            )
+            EncryptionKey::try_from(&*input.parse::<syn::LitInt>()?.to_string())
+                .map_err(|e| syn::parse::Error::new(Span::call_site(), e))?
         };
 
         Ok(Self {
             file_path: file_path.value(),
-            random_key,
             key,
         })
     }

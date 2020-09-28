@@ -1,26 +1,27 @@
 #[doc(hidden)] pub use include_crypt_codegen as codegen;
 #[doc(hidden)] pub use include_crypt_crypto as crypto;
+#[doc(hidden)] pub use obfstr;
 
 use crypto::{
     aes::{aes_decrypt, AES_KEY_LEN, AES_NONCE_LEN},
     key::EncryptionKey,
     xor::{xor, XOR_KEY_LEN},
 };
+use obfstr::ObfString;
 use std::string::FromUtf8Error;
 
-/// The different encryption types.
-#[derive(Debug)]
+/// The different encryption types with their encryption keys. The obfuscated
+/// strings have double the size because of the hex encoding.
 pub enum EncryptionType {
     /// The xor encryption type with the key.
-    Xor(&'static str),
+    Xor(ObfString<[u8; XOR_KEY_LEN * 2]>),
 
     /// The aes encryption type with the key and nonce.
-    Aes(&'static str, &'static str),
+    Aes(ObfString<[u8; AES_KEY_LEN * 2]>, ObfString<[u8; AES_NONCE_LEN * 2]>),
 }
 
 /// The structure which is used to store the encrypted buffer and the decryption
 /// keys.
-#[derive(Debug)]
 pub struct EncryptedFile {
     /// The buffer that contains the encrypted bytes.
     buffer: &'static [u8],
@@ -59,7 +60,8 @@ impl EncryptedFile {
             EncryptionType::Xor(key) => {
                 let mut buffer = self.buffer.to_vec();
 
-                let key = EncryptionKey::new(key, XOR_KEY_LEN).unwrap();
+                let key =
+                    EncryptionKey::new(key.deobfuscate(obfstr::random!(u16) as usize).as_str(), XOR_KEY_LEN).unwrap();
                 xor(buffer.as_mut_slice(), key);
 
                 buffer.to_vec()
@@ -67,8 +69,11 @@ impl EncryptedFile {
             EncryptionType::Aes(key, nonce) => {
                 let mut buffer = self.buffer.to_vec();
 
-                let key = EncryptionKey::new(key, AES_KEY_LEN).unwrap();
-                let nonce = EncryptionKey::new(nonce, AES_NONCE_LEN).unwrap();
+                let key =
+                    EncryptionKey::new(key.deobfuscate(obfstr::random!(u16) as usize).as_str(), AES_KEY_LEN).unwrap();
+                let nonce =
+                    EncryptionKey::new(nonce.deobfuscate(obfstr::random!(u16) as usize).as_str(), AES_NONCE_LEN)
+                        .unwrap();
                 aes_decrypt(buffer.as_mut_slice(), key, nonce);
 
                 buffer
@@ -159,9 +164,9 @@ macro_rules! include_crypt {
         $crate::EncryptedFile::new(data, $crate::EncryptionType::Xor(key))
     }};
     (XOR, $path:expr, $key:expr) => {{
-        let data = $crate::codegen::encrypt_xor!($path, $key);
+        let (key, data) = $crate::codegen::encrypt_xor!($path, $key);
 
-        $crate::EncryptedFile::new(data, $crate::EncryptionType::Xor(stringify!($key)))
+        $crate::EncryptedFile::new(data, $crate::EncryptionType::Xor(key))
     }};
 
     (AES, $path:expr) => {{
@@ -170,9 +175,9 @@ macro_rules! include_crypt {
         $crate::EncryptedFile::new(data, $crate::EncryptionType::Aes(key, nonce))
     }};
     (AES, $path:expr, $key:expr) => {{
-        let (nonce, data) = $crate::codegen::encrypt_aes!($path, $key);
+        let (key, nonce, data) = $crate::codegen::encrypt_aes!($path, $key);
 
-        $crate::EncryptedFile::new(data, $crate::EncryptionType::Aes(stringify!($key), nonce))
+        $crate::EncryptedFile::new(data, $crate::EncryptionType::Aes(key, nonce))
     }};
 
     ($path:expr) => {

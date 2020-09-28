@@ -1,4 +1,5 @@
 use proc_macro::TokenStream;
+use proc_macro2::Span;
 
 mod aes;
 mod args;
@@ -13,7 +14,7 @@ mod xor;
 ///
 /// ```
 /// # use include_crypt_codegen::encrypt_xor;
-/// let encrypted = encrypt_xor!("src/lib.rs", 0xdeadbeef);
+/// let (key, encrypted) = encrypt_xor!("src/lib.rs", 0xdeadbeef);
 /// ```
 ///
 /// ## Random key
@@ -38,7 +39,7 @@ pub fn encrypt_xor(input: TokenStream) -> TokenStream {
 ///
 /// ```
 /// # use include_crypt_codegen::encrypt_aes;
-/// let (nonce, encrypted) = encrypt_aes!("src/lib.rs", 0xdeadbeef);
+/// let (key, nonce, encrypted) = encrypt_aes!("src/lib.rs", 0xdeadbeef);
 /// ```
 ///
 /// ## Random key

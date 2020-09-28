@@ -2,7 +2,7 @@ use rand::{rngs::OsRng, Rng};
 use std::{convert::TryFrom, ops::Deref};
 
 /// The default key size.
-pub const DEFAULT_KEY_LEN: usize = 32;
+pub const DEFAULT_KEY_LEN: usize = super::xor::XOR_KEY_LEN;
 
 /// A simple symmetric encryption key which will be stored as a vector of bytes.
 #[derive(Debug)]
@@ -20,7 +20,7 @@ impl EncryptionKey {
         // Extend the key if it is smaller than the default key length.
         //
         if key.len() != key_len {
-            key = key.into_iter().cycle().take(32).collect::<Vec<_>>();
+            key = key.into_iter().cycle().take(DEFAULT_KEY_LEN).collect::<Vec<_>>();
         }
 
         Ok(Self { data: key })
