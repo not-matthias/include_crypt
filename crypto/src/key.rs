@@ -5,7 +5,6 @@ use std::{convert::TryFrom, ops::Deref};
 pub const DEFAULT_KEY_LEN: usize = super::xor::XOR_KEY_LEN;
 
 /// A simple symmetric encryption key which will be stored as a vector of bytes.
-#[derive(Debug)]
 pub struct EncryptionKey {
     data: Vec<u8>,
 }
