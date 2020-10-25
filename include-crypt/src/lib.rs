@@ -8,7 +8,7 @@ use crypto::{
     xor::{xor, XOR_KEY_LEN},
 };
 use obfstr::ObfString;
-use std::string::FromUtf8Error;
+use std::{path::Path, string::FromUtf8Error};
 
 /// The different encryption types with their encryption keys. The obfuscated
 /// strings have double the size because of the hex encoding.
@@ -134,7 +134,7 @@ impl EncryptedFile {
 ///
 /// - `$encryption_type`: The type of the encryption. Either `XOR` or `AES`. If
 ///   you don't specify an encryption type, `XOR` will be used.
-/// - `$filePath`: The path to the file that should be embedded. If the path is
+/// - `$file_path`: The path to the file that should be embedded. If the path is
 ///   relative, the `CARGO_MANIFEST_DIR` will be used as a starting point.
 /// - `$optional_key`: The optional encryption key. If specified, it has to be
 ///   decodable by [hex](https://crates.io/crates/hex) crate.
@@ -148,24 +148,31 @@ impl EncryptedFile {
 ///
 /// More examples can be found in the `tests` and `examples` directory.
 ///
-/// ```ignore
+/// ```
+/// # use include_crypt::{EncryptedFile,include_crypt};
+/// #
 /// // Encrypt using XOR with random key
-/// let file: EncryptedFile = include_crypt!("file.txt");
+/// let file: EncryptedFile = include_crypt!("src/lib.rs");
 ///
 /// // Encrypt using XOR with custom key
-/// let file: EncryptedFile = include_crypt!("file.txt", 0xdeadbeef);
+/// let file: EncryptedFile = include_crypt!("src/lib.rs", 0xdeadbeef);
 ///
 /// // Encrypt using XOR with random key
-/// let file: EncryptedFile = include_crypt!(XOR, "file.txt");
+/// let file: EncryptedFile = include_crypt!(XOR, "src/lib.rs");
 ///
 /// // Encrypt using XOR with custom key
-/// let file: EncryptedFile = include_crypt!(XOR, "file.txt", 0xdeadbeef);
+/// let file: EncryptedFile = include_crypt!(XOR, "src/lib.rs", 0xdeadbeef);
 ///
 /// // Encrypt using AES with random key
-/// let file: EncryptedFile = include_crypt!(AES, "file.txt");
+/// let file: EncryptedFile = include_crypt!(AES, "src/lib.rs");
 ///
 /// // Encrypt using AES with custom key
-/// let file: EncryptedFile = include_crypt!(AES, "file.txt", 0xdeadbeef);
+/// let file: EncryptedFile = include_crypt!(AES, "src/lib.rs", 0xdeadbeef);
+/// ```
+///
+/// You can also use absolute paths:
+/// ```ignore
+/// let file: EncryptedFile = include_crypt!("D:/file.txt");
 /// ```
 #[macro_export]
 macro_rules! include_crypt {
@@ -192,9 +199,109 @@ macro_rules! include_crypt {
     }};
 
     ($path:expr) => {
-        include_crypt!(XOR, $path)
+        $crate::include_crypt!(XOR, $path)
     };
     ($path:expr, $key:expr) => {
-        include_crypt!(XOR, $path, $key)
+        $crate::include_crypt!(XOR, $path, $key)
+    };
+}
+
+/// The folder with all the encrypted files.
+pub struct EncryptedFolder<'a> {
+    #[doc(hidden)]
+    pub files: &'a [(&'static str, EncryptedFile)],
+}
+
+impl<'a> EncryptedFolder<'a> {
+    /// Tries to find the file in the folder.
+    ///
+    /// # Parameters
+    ///
+    /// - `path`: The relative path to the file in the folder.
+    ///
+    /// # Returns
+    ///
+    /// If the file could be found, it will be returned. If it couldn't be
+    /// found, `None` will be returned.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use include_crypt::{include_dir, EncryptedFile, EncryptedFolder};
+    /// let folder: EncryptedFolder = include_dir!(".");
+    ///
+    /// assert!(folder.get("src\\lib.rs").is_some());
+    /// assert!(folder.get("src/lib.rs").is_some());
+    /// ```
+    pub fn get(&self, file_path: &str) -> Option<&EncryptedFile> {
+        for (path, file) in self.files {
+            // Find the file. We have to convert it into a `Path` instance first, so that
+            // there's no difference between `\` and `/`.
+            //
+            if Path::new(*path) == Path::new(file_path) {
+                return Some(file);
+            }
+        }
+
+        None
+    }
+}
+
+/// Macro that can be used to safely embed a folder into the binary.
+///
+/// # Parameters
+///
+/// The macro can be used with different encryption algorithms.
+///
+/// ```ignore
+/// include_dir!($encryption_type, $folder_path)
+/// ```
+///
+/// - `$encryption_type`: The type of the encryption. Either `XOR` or `AES`. If
+///   you don't specify an encryption type, `XOR` will be used.
+/// - `$folder_path`: The path to the folder that should be embedded. If the
+///   path is relative, the `CARGO_MANIFEST_DIR` will be used as a starting
+///   point.
+///
+/// # Returns
+///
+/// The macro expands to a `include_files` proc macro call. The return value
+/// will then be used to create a new `EncryptedFolder` instance.
+///
+/// # Examples
+///
+/// ```
+/// # use include_crypt::{EncryptedFolder, include_dir};
+/// #
+/// // Encrypt using XOR with random key
+/// let folder: EncryptedFolder = include_dir!("./src");
+///
+/// // Encrypt using XOR with random key
+/// let folder: EncryptedFolder = include_dir!(XOR, "./src");
+///
+/// // Encrypt using AES with random key
+/// let folder: EncryptedFolder = include_dir!(AES, "./src");
+/// ```
+///
+/// You can also use absolute paths:
+/// ```ignore
+/// let folder: EncryptedFolder = include_dir!("D:/assets");
+/// ```
+#[macro_export]
+macro_rules! include_dir {
+    (XOR, $path:expr) => {
+        $crate::EncryptedFolder {
+            files: &$crate::codegen::include_files!("XOR", $path),
+        }
+    };
+
+    (AES, $path:expr) => {
+        $crate::EncryptedFolder {
+            files: &$crate::codegen::include_files!("AES", $path),
+        }
+    };
+
+    ($path:expr) => {
+        $crate::include_dir!(XOR, $path)
     };
 }

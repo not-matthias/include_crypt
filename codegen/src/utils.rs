@@ -1,7 +1,7 @@
 use std::{fs::File, io::Read, path::PathBuf};
 
 pub(crate) fn error_mapping<E: std::fmt::Display>(error: E) -> syn::Error {
-    syn::Error::new(proc_macro2::Span::call_site(), error)
+    syn::Error::new(proc_macro2::Span::mixed_site(), error)
 }
 
 /// Opens the specified file and returns the content.

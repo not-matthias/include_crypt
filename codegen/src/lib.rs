@@ -1,9 +1,8 @@
+use implementations::{aes, files, xor};
 use proc_macro::TokenStream;
 
-mod aes;
-mod args;
+mod implementations;
 mod utils;
-mod xor;
 
 /// Encrypts a file with a random or custom key.
 ///
@@ -50,6 +49,22 @@ pub fn encrypt_xor(input: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn encrypt_aes(input: TokenStream) -> TokenStream {
     match aes::impl_encrypt_aes(input) {
+        Ok(ts) => ts,
+        Err(err) => err.to_compile_error().into(),
+    }
+}
+
+/// Encrypts all the files in the specified folder.
+///
+/// # Example
+///
+/// ```ignore
+/// # use include_crypt_codegen::include_files;
+/// let files = include_files!("XOR", "src");
+/// ```
+#[proc_macro]
+pub fn include_files(input: TokenStream) -> TokenStream {
+    match files::impl_include_files(input) {
         Ok(ts) => ts,
         Err(err) => err.to_compile_error().into(),
     }

@@ -1,5 +1,5 @@
 use crate::{
-    args::SymmetricArgs,
+    implementations::args::FileArgs,
     utils::{error_mapping, read_file},
 };
 use include_crypt_crypto::{
@@ -10,7 +10,7 @@ use syn::export::TokenStream;
 
 #[doc(hidden)]
 pub(crate) fn impl_encrypt_aes(input: TokenStream) -> syn::Result<TokenStream> {
-    let args: SymmetricArgs = syn::parse(input)?;
+    let args: FileArgs = syn::parse(input)?;
     let mut file = read_file(&args.file_path)?;
 
     // Encrypt the file
