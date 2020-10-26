@@ -208,7 +208,6 @@ macro_rules! include_crypt {
 }
 
 /// The folder with all the encrypted files.
-#[derive(Copy, Clone)]
 pub struct EncryptedFolder<'a> {
     #[doc(hidden)]
     pub files: &'a [(&'static str, EncryptedFile)],
