@@ -2,12 +2,12 @@
 #[doc(hidden)] pub use include_crypt_crypto as crypto;
 #[doc(hidden)] pub use obfstr;
 
+use crate::obfstr::{random, ObfString};
 use crypto::{
     aes::{aes_decrypt, AES_KEY_LEN, AES_NONCE_LEN},
     key::EncryptionKey,
     xor::{xor, XOR_KEY_LEN},
 };
-use obfstr::ObfString;
 use std::{
     collections::hash_map::DefaultHasher,
     hash::{Hash, Hasher},
@@ -68,7 +68,7 @@ impl EncryptedFile {
                 // By using `map` instead of `unwrap` we are getting rid of the panic strings in
                 // the binary.
                 //
-                let _ = EncryptionKey::new(key.deobfuscate(obfstr::random!(u16) as usize).as_str(), XOR_KEY_LEN)
+                let _ = EncryptionKey::new(key.deobfuscate(random!(u16) as usize).as_str(), XOR_KEY_LEN)
                     .map(|key| xor(buffer.as_mut_slice(), key));
 
                 buffer.to_vec()
@@ -79,16 +79,13 @@ impl EncryptedFile {
                 // By using `map` instead of `unwrap` we are getting rid of the panic strings in
                 // the binary.
                 //
-                let _ = EncryptionKey::new(key.deobfuscate(obfstr::random!(u16) as usize).as_str(), AES_KEY_LEN).map(
-                    |key| {
-                        EncryptionKey::new(nonce.deobfuscate(obfstr::random!(u16) as usize).as_str(), AES_NONCE_LEN)
-                            .map(|nonce| {
-                                // This should never fail anyways because the keys have a fixed size.
-                                //
-                                let _ = aes_decrypt(buffer.as_mut_slice(), key, nonce);
-                            })
-                    },
-                );
+                let _ = EncryptionKey::new(key.deobfuscate(random!(u16) as usize).as_str(), AES_KEY_LEN).map(|key| {
+                    EncryptionKey::new(nonce.deobfuscate(random!(u16) as usize).as_str(), AES_NONCE_LEN).map(|nonce| {
+                        // This should never fail anyways because the keys have a fixed size.
+                        //
+                        let _ = aes_decrypt(buffer.as_mut_slice(), key, nonce);
+                    })
+                });
 
                 buffer
             }

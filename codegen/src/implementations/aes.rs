@@ -24,5 +24,5 @@ pub(crate) fn impl_encrypt_aes(input: TokenStream) -> syn::Result<TokenStream> {
     let bytes = syn::LitByteStr::new(&file, proc_macro2::Span::call_site());
     let key = args.key.as_str();
 
-    Ok(quote::quote!((obfstr::obfconst!(#key), obfstr::obfconst!(#nonce), #bytes)).into())
+    Ok(quote::quote!((crate::obfstr::obfconst!(#key), crate::obfstr::obfconst!(#nonce), #bytes)).into())
 }
