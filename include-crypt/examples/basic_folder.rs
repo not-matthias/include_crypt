@@ -3,6 +3,10 @@ use include_crypt::{include_dir, EncryptedFolder};
 static FOLDER: EncryptedFolder = include_dir!("examples");
 
 fn main() {
+    for (name, _) in FOLDER.files {
+        println!("file_name: {:?}", name);
+    }
+
     println!(
         "found 'examples/basic_folder': {:?}",
         FOLDER.get("examples/basic_folder").is_some()

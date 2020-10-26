@@ -8,7 +8,11 @@ use crypto::{
     xor::{xor, XOR_KEY_LEN},
 };
 use obfstr::ObfString;
-use std::{path::Path, string::FromUtf8Error};
+use std::{
+    collections::hash_map::DefaultHasher,
+    hash::{Hash, Hasher},
+    string::FromUtf8Error,
+};
 
 /// The different encryption types with their encryption keys. The obfuscated
 /// strings have double the size because of the hex encoding.
@@ -230,15 +234,26 @@ impl<'a> EncryptedFolder<'a> {
     /// # use include_crypt::{include_dir, EncryptedFile, EncryptedFolder};
     /// let folder: EncryptedFolder = include_dir!(".");
     ///
+    /// println!("{}", folder.files.len());
+    ///
     /// assert!(folder.get("src\\lib.rs").is_some());
     /// assert!(folder.get("src/lib.rs").is_some());
     /// ```
     pub fn get(&self, file_path: &str) -> Option<&EncryptedFile> {
+        // We have to normalize the slashes first so that there's no difference
+        // between `\` and `/`. After that we can hash the file and compare it later in
+        // the loop.
+        //
+        let file_path = {
+            let path = file_path.replace("\\", "/");
+
+            let mut hasher = DefaultHasher::new();
+            path.hash(&mut hasher);
+            hasher.finish().to_string()
+        };
+
         for (path, file) in self.files {
-            // Find the file. We have to convert it into a `Path` instance first, so that
-            // there's no difference between `\` and `/`.
-            //
-            if Path::new(*path) == Path::new(file_path) {
+            if *path == file_path {
                 return Some(file);
             }
         }

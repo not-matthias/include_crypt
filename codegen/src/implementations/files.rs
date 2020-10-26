@@ -7,7 +7,11 @@ use crate::{
     utils,
 };
 use quote::quote;
-use std::path::PathBuf;
+use std::{
+    collections::hash_map::DefaultHasher,
+    hash::{Hash, Hasher},
+    path::PathBuf,
+};
 use syn::export::TokenStream;
 
 pub(crate) fn impl_include_files(input: TokenStream) -> syn::Result<TokenStream> {
@@ -65,13 +69,19 @@ pub(crate) fn impl_include_files(input: TokenStream) -> syn::Result<TokenStream>
 
     // Convert the absolute paths into relative paths
     //
-    // TODO: Hash the file path?
     let paths: Vec<String> = file_paths
         .into_iter()
         .map(|path| {
             path.strip_prefix(&folder_path)
                 .map(|path| path.display().to_string())
                 .unwrap_or_default()
+        })
+        .map(|path| {
+            let path = path.replace("\\", "/");
+
+            let mut hasher = DefaultHasher::new();
+            path.hash(&mut hasher);
+            hasher.finish().to_string()
         })
         .collect::<Vec<_>>();
 
