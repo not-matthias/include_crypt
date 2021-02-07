@@ -1,4 +1,6 @@
 ![Rust](https://github.com/not-matthias/include_crypt/workflows/Rust/badge.svg)
+[![crates.io](https://img.shields.io/crates/v/include-crypt.svg)](https://crates.io/crates/include-crypt)
+[![docs.rs](https://docs.rs/include-crypt/badge.svg)](https://docs.rs/include-crypt)
 
 # include_crypt
 Safely embed files into your binary.

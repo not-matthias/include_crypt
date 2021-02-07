@@ -1,9 +1,11 @@
 [package]
 name = "include-crypt-codegen"
+description = "Codegen helpers for the `include-crypt` crate"
 version = "0.1.0"
 authors = ["not-matthias <26800596+not-matthias@users.noreply.github.com>"]
 edition = "2018"
 build = "build.rs"
+license-file = "../LICENSE"
 
 [lib]
 proc-macro = true
@@ -16,7 +18,7 @@ rand = "0.8.3"
 libflate = { version = "1.0.3", optional = true }
 glob = "0.3.0"
 
-include-crypt-crypto = { path = "../crypto" }
+include-crypt-crypto = "0.1.0"
 
 [dev-dependencies]
 obfstr = "0.2.4"

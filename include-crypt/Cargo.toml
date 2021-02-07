@@ -1,14 +1,15 @@
 [package]
 name = "include-crypt"
+description = "Safely embed files into your binary."
 version = "0.1.0"
 authors = ["not-matthias <26800596+not-matthias@users.noreply.github.com>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+readme = "../README.md"
+license-file = "../LICENSE"
 
 [dependencies]
-include-crypt-codegen = { path = "../codegen" }
-include-crypt-crypto = { path = "../crypto" }
+include-crypt-codegen = "0.1.0"
+include-crypt-crypto = "0.1.0"
 
 libflate = { version = "1.0.3", optional = true }
 obfstr = "0.2.4"
