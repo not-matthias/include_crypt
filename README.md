@@ -19,10 +19,6 @@ fn main() {
 
 You can also select a encryption algorithm and specify your custom key. In this example, the key will be randomly generated.
 
-## How does it work? 
-
-TODO
-
 ## Features
 
 - `compression`: Compresses the file before encrypting it.
