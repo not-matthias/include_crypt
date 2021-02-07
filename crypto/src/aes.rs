@@ -1,11 +1,9 @@
 use crate::key::EncryptionKey;
-use aes::Aes256;
-use aes::cipher::NewStreamCipher;
-use aes::cipher::StreamCipher;
-use cfb_mode::{
-    Cfb,
+use aes::{
+    cipher::{NewStreamCipher, StreamCipher},
+    Aes256,
 };
-use cfb_mode::cipher::stream::InvalidKeyNonceLength;
+use cfb_mode::{cipher::stream::InvalidKeyNonceLength, Cfb};
 
 /// Default key length (AES-256)
 pub const AES_KEY_LEN: usize = 32;

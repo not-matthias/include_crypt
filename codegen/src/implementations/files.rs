@@ -6,13 +6,13 @@ use crate::{
     },
     utils,
 };
+use proc_macro::TokenStream;
 use quote::quote;
 use std::{
     collections::hash_map::DefaultHasher,
     hash::{Hash, Hasher},
     path::PathBuf,
 };
-use proc_macro::TokenStream;
 
 pub(crate) fn impl_include_files(input: TokenStream) -> syn::Result<TokenStream> {
     let args: FolderArgs = syn::parse(input)?;
