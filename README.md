@@ -14,10 +14,9 @@ fn main() {
     let decrypted = FILE.decrypt();
     let decrypted_str = FILE.decrypt_str();
 }
-
 ```
 
-You can also select a encryption algorithm and specify your custom key. In this example, the key will be randomly generated.
+You can also select an encryption algorithm and specify your custom key. In this example, the key will be randomly generated. For more information see the [`include-crypt/examples/`](./include-crypt/examples) folder.
 
 ## Features
 
