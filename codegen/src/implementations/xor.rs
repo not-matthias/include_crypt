@@ -1,6 +1,6 @@
 use crate::{implementations::args::FileArgs, utils::read_file};
 use include_crypt_crypto::xor::xor;
-use syn::export::TokenStream;
+use proc_macro::TokenStream;
 
 #[doc(hidden)]
 pub(crate) fn impl_encrypt_xor(input: TokenStream) -> syn::Result<TokenStream> {

@@ -12,7 +12,7 @@ use std::{
     hash::{Hash, Hasher},
     path::PathBuf,
 };
-use syn::export::TokenStream;
+use proc_macro::TokenStream;
 
 pub(crate) fn impl_include_files(input: TokenStream) -> syn::Result<TokenStream> {
     let args: FolderArgs = syn::parse(input)?;

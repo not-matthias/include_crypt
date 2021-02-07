@@ -58,7 +58,7 @@ pub fn encrypt_aes(input: TokenStream) -> TokenStream {
 ///
 /// # Example
 ///
-/// ```ignore
+/// ```
 /// # use include_crypt_codegen::include_files;
 /// let files = include_files!("XOR", "src");
 /// ```

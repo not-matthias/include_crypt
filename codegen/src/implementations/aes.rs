@@ -6,7 +6,7 @@ use include_crypt_crypto::{
     aes::{aes_encrypt, AES_NONCE_LEN},
     key::EncryptionKey,
 };
-use syn::export::TokenStream;
+use proc_macro::TokenStream;
 
 #[doc(hidden)]
 pub(crate) fn impl_encrypt_aes(input: TokenStream) -> syn::Result<TokenStream> {

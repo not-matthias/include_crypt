@@ -10,8 +10,8 @@ edition = "2018"
 include-crypt-codegen = { path = "../codegen" }
 include-crypt-crypto = { path = "../crypto" }
 
-libflate = { version = "1.0.2", optional = true }
-obfstr = "0.2.0"
+libflate = { version = "1.0.3", optional = true }
+obfstr = "0.2.4"
 
 [features]
 default = []

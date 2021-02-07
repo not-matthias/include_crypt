@@ -9,17 +9,18 @@ build = "build.rs"
 proc-macro = true
 
 [dependencies]
-syn = { version = "1.0.42", features = ["full", "extra-traits"] }
-quote = "1.0.7"
-proc-macro2 = "1.0.23"
-rand = "0.7.3"
-libflate = { version = "1.0.2", optional = true }
+syn = { version = "1.0.60", features = ["full", "extra-traits"] }
+quote = "1.0.8"
+proc-macro2 = "1.0.24"
+rand = "0.8.3"
+libflate = { version = "1.0.3", optional = true }
 glob = "0.3.0"
 
 include-crypt-crypto = { path = "../crypto" }
 
 [dev-dependencies]
-obfstr = "0.2.0"
+obfstr = "0.2.4"
+include-crypt = { path = "../include-crypt" }
 
 [features]
 default = []
