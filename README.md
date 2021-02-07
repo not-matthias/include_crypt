@@ -3,7 +3,7 @@
 [![docs.rs](https://docs.rs/include-crypt/badge.svg)](https://docs.rs/include-crypt)
 
 # include_crypt
-Safely* embed files into your binary.
+Safely embed files into your binary.
 
 ## Example
 
