@@ -21,7 +21,5 @@ fn main() -> Result<(), String> {
         } else {
             Ok(())
         }
-    } else {
-        Ok(())
     }
 }
