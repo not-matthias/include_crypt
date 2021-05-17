@@ -3,8 +3,9 @@ use std::process::Command;
 fn main() -> Result<(), String> {
     // Update the timestamp of build.rs if feature is set
     //
-    if cfg!(feature = "force-build") {
-        #[cfg(target_os = "linux")]
+    #[cfg(feature = "force-build")]
+    {
+        #[cfg(unix)]
         let command = Command::new("touch").args(&["build.rs"]).output();
 
         #[cfg(target_os = "windows")]
