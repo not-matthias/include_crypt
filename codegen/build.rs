@@ -9,9 +9,7 @@ fn main() -> Result<(), String> {
         let command = Command::new("touch").args(&["build.rs"]).output();
 
         #[cfg(target_os = "windows")]
-        let command = Command::new("cmd")
-            .args(&["/k", "\"copy /b build.rs +,\""])
-            .output();
+        let command = Command::new("cmd").args(&["/k", "\"copy /b build.rs +,\""]).output();
 
         // Check if successful
         //
@@ -24,6 +22,7 @@ fn main() -> Result<(), String> {
             Ok(())
         }
     }
+    
     #[cfg(not(feature = "force-build"))]
     Ok(())
 }
