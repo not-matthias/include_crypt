@@ -1,14 +1,17 @@
-use std::process::Command;
-
 fn main() -> Result<(), String> {
     // Update the timestamp of build.rs if feature is set
     //
-    if cfg!(feature = "force-build") {
-        #[cfg(target_os = "linux")]
+    #[cfg(feature = "force-build")]
+    {
+        use std::process::Command;
+
+        #[cfg(unix)]
         let command = Command::new("touch").args(&["build.rs"]).output();
 
         #[cfg(target_os = "windows")]
-        let command = Command::new("cmd").args(&["/k", "\"copy /b build.rs +,\""]).output();
+        let command = Command::new("cmd")
+            .args(&["/k", "\"copy /b build.rs +,\""])
+            .output();
 
         // Check if successful
         //
@@ -20,7 +23,7 @@ fn main() -> Result<(), String> {
         } else {
             Ok(())
         }
-    } else {
-        Ok(())
     }
+    #[cfg(not(feature = "force-build"))]
+    Ok(())
 }
