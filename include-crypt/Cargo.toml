@@ -8,7 +8,7 @@ readme = "../README.md"
 license-file = "../LICENSE"
 
 [dependencies]
-include-crypt-codegen = "0.1.0"
+include-crypt-codegen = "0.1.1"
 include-crypt-crypto = "0.1.0"
 
 libflate = { version = "1.0.3", optional = true }
